@@ -1,0 +1,17 @@
+favourtie_foods =["pizza","sushi","pasta","salad"]
+numbers = [1,2,3,4,]
+
+print("favourite_foods", favourtie_foods)
+print("numbers", numbers)
+
+first_food = favourtie_foods[0]
+second_food = favourtie_foods[1]
+third_food = favourtie_foods[2]
+fourth_food = favourtie_foods[3]
+
+print("favourtie_foods", third_food)
+
+favourtie_food_sentence = (f"my favourite food is {first_food}")
+                           
+                           
+print(favourtie_food_sentence)
