@@ -1,0 +1,24 @@
+import pandas as pd
+
+columns = ['Title', 'Author', 'Year', 'Genre']
+data = [
+    ['To Kill a Mockingbird', 'Harper Lee', 1960, 'Fiction'], 
+    ['1984', 'George Orwell', 1949, 'Dystopian'], 
+    ['The Great Gatsby', 'F. Scott Fitzgerald', 1925, 'Fiction']
+]
+new_book = ['Brave New World', 'Aldous Huxley', 1932, 'Dystopian']
+
+df = pd.DataFrame(data, columns=columns)
+
+years = df['Year'].tolist()
+
+years_after_1950 = df[df['Year'] > 1950]['Year'].tolist()
+
+df.loc[df['Genre'] == 'Fiction', 'Genre'] = 'Classic Fiction'
+
+df.loc[len(df)] = new_book
+
+print("Years List:", years)
+print("Years > 1950:", years_after_1950)
+print("\nUpdated DataFrame:")
+print(df)
