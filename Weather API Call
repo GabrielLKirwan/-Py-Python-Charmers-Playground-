@@ -1,0 +1,74 @@
+import requests
+import pandas as pd
+
+api_key = 'YOUR_API_KEY' 
+
+location_ids = ['3002', '3005', '3008', '3014']
+
+fallback_ids = ['3017', '3023', '3026', '3031', '3034'] 
+
+weather_records = []
+successful_stations = 0
+
+
+while successful_stations < 4 and len(location_ids) > 0:
+    
+
+    loc_id = location_ids.pop(0)
+    api_call = f'http://datapoint.metoffice.gov.uk/public/data/val/wxobs/all/json/{loc_id}?res=hourly&key={api_key}'
+    
+    response = requests.get(api_call)
+    
+    if response.status_code == 200:
+        data = response.json()
+        
+        try:
+
+            dv = data['SiteRep']['DV']
+            dataDate = dv['dataDate']
+            loc_info = dv['Location']
+            
+            name = loc_info['name']
+            lat = loc_info['lat']
+            lon = loc_info['lon']
+            
+            if 'Period' in loc_info:
+                periods = loc_info['Period']
+                
+
+                if isinstance(periods, dict):
+                    periods = [periods]
+                    
+                for period in periods:
+                    reps = period['Rep']
+                    if isinstance(reps, dict):
+                        reps = [reps]
+                        
+                    for rep in reps:
+                        hour = int(rep.get('$')) // 60
+                        temp = rep.get('T')
+                        
+                        weather_records.append({
+                            'location name': name,
+                            'dataDate': dataDate,
+                            'lat & lon': f"{lat}, {lon}",
+                            'hour': f"{hour:02d}:00",
+                            'Temperature': temp
+                        })
+                        
+                successful_stations += 1 # Mark this station as successfully processed
+                
+            else:
+                if fallback_ids:
+                    location_ids.append(fallback_ids.pop(0))
+                    
+        except KeyError:
+            if fallback_ids:
+                location_ids.append(fallback_ids.pop(0))
+    else:
+        if fallback_ids:
+            location_ids.append(fallback_ids.pop(0))
+
+df = pd.DataFrame(weather_records)
+
+print(df)
